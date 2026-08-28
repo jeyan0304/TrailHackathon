@@ -121,7 +121,10 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         <div className="absolute inset-0 p-8 flex flex-wrap items-center justify-around pointer-events-auto">
           {zones.map((zone, idx) => {
             const isSelected = selectedZoneId === zone.id;
-            const level = zone.assessment.riskLevel;
+            const level = zone.riskLevel || zone.assessment?.riskLevel || 'MODERATE';
+            const score = zone.riskScore ?? zone.assessment?.riskScore ?? 50;
+            const rain = zone.rainfallAccumulationMm ?? zone.assessment?.rainfallAccumulation24hMm ?? 0;
+            const slope = zone.slopeAngleDeg ?? zone.assessment?.slopeAngleDeg ?? 30;
 
             const markerStyle = {
               LOW: 'border-emerald-600 bg-slate-900/95 text-emerald-300 hover:border-emerald-400',
@@ -146,16 +149,16 @@ export const MapContainer: React.FC<MapContainerProps> = ({
                   {level === 'HIGH' && <AlertOctagon className="w-3.5 h-3.5 text-orange-400" />}
                   {level === 'MODERATE' && <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />}
                   {level === 'LOW' && <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />}
-                  <span className="font-semibold text-slate-100">{zone.code}</span>
+                  <span className="font-semibold text-slate-100">{zone.code || zone.name.slice(0, 8)}</span>
                   <span className="ml-auto font-mono text-[11px] font-bold px-1.5 py-0.2 rounded bg-slate-800 text-slate-200">
-                    {zone.assessment.riskScore}
+                    {score}
                   </span>
                 </div>
                 <div className="font-medium text-slate-200 truncate max-w-[180px]">
                   {zone.name}
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5">
-                  Rain: {zone.assessment.rainfallAccumulation24hMm} mm • Slope: {zone.assessment.slopeAngleDeg}°
+                  Rain: {rain} mm • Slope: {slope}°
                 </div>
               </button>
             );

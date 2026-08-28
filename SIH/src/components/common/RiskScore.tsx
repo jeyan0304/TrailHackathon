@@ -33,6 +33,13 @@ export const RiskScore: React.FC<RiskScoreProps> = ({
     CRITICAL: 'text-red-400',
   }[level] || 'text-slate-300';
 
+  const humanMeaning = {
+    CRITICAL: 'Very High Risk — Immediate attention needed',
+    HIGH: 'High Risk — Heavy rain is increasing landslide risk in this area',
+    MODERATE: 'Moderate Risk — Soil moisture rising, monitor slope closely',
+    LOW: 'Low Risk — Hillside terrain and drainage currently stable',
+  }[level] || 'Assessment pending';
+
   const normalizedScore = Math.min(Math.max(score, 0), 100);
 
   if (compact) {
@@ -52,7 +59,7 @@ export const RiskScore: React.FC<RiskScoreProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-baseline gap-1.5">
           <span className="text-xs uppercase tracking-wider text-slate-400 font-medium">
-            Risk Score
+            AI Landslide Risk Assessment
           </span>
           <span className={`font-mono font-bold ${size === 'lg' ? 'text-3xl' : 'text-2xl'} ${scoreTextColor}`}>
             {normalizedScore}
@@ -60,6 +67,11 @@ export const RiskScore: React.FC<RiskScoreProps> = ({
           <span className="text-xs text-slate-500 font-mono">/ 100</span>
         </div>
         <RiskBadge level={level} size={size === 'lg' ? 'md' : 'sm'} />
+      </div>
+
+      {/* Human-friendly summary line */}
+      <div className="text-xs font-semibold text-slate-200">
+        {humanMeaning}
       </div>
 
       {/* Progress / Gauge bar */}
@@ -74,15 +86,15 @@ export const RiskScore: React.FC<RiskScoreProps> = ({
       {showFactors && contributingFactors.length > 0 && (
         <div className="mt-1 pt-2 border-t border-slate-800">
           <div className="text-xs font-semibold text-slate-400 mb-1.5">
-            Key Contributing Factors:
+            Why is this area at risk?
           </div>
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {contributingFactors.map((factor, idx) => (
               <li
                 key={idx}
-                className="text-xs text-slate-300 flex items-start gap-2 leading-normal"
+                className="text-xs text-slate-300 flex items-start gap-2 leading-relaxed"
               >
-                <span className="text-slate-500 text-xs mt-0.5">•</span>
+                <span className="text-blue-400 font-bold">•</span>
                 <span>{factor}</span>
               </li>
             ))}
@@ -92,3 +104,5 @@ export const RiskScore: React.FC<RiskScoreProps> = ({
     </div>
   );
 };
+
+export default RiskScore;

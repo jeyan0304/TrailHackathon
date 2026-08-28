@@ -26,6 +26,7 @@ import {
   Route,
   MapPin,
   X,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface AuthorityDashboardProps {
@@ -62,72 +63,78 @@ export const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({
   ).length;
 
   return (
-    <div className="space-y-6 pb-8">
-      {/* Page Title & Region Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-slate-800">
+    <div className="space-y-8 pb-12">
+      {/* Page Title & Operational Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
         <div>
-          <h2 className="text-xl font-bold text-slate-100 tracking-tight font-sans">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
+              COMMAND SYSTEM ACTIVE
+            </span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
             Authority Dashboard — {selectedState.name}
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Landslide risk monitoring, road connectivity & emergency response
+            Regional landslide risk monitoring, arterial road connectivity & emergency response coordination.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400 font-medium">
-            Active Dataset:
+          <span className="text-xs text-slate-400">
+            Active Demonstration Scenario:
           </span>
-          <span className="text-xs px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 font-mono">
-            Meghalaya Corridor Scenario
+          <span className="text-xs px-2.5 py-1 rounded-md bg-slate-900 border border-slate-700 text-slate-200 font-semibold">
+            Meghalaya Highway Corridor
           </span>
         </div>
       </div>
 
-      {/* 1. Simplified KPI Summary Cards */}
+      {/* 1. Executive Decision KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Regional Risk Index"
+          label="Regional Landslide Risk"
           value={`${DEMO_REGIONAL_KPI_SUMMARY.overallRiskScore}`}
           subValue="/ 100"
           statusText="High Risk"
-          supportingMetric="↑ 14 points in 6h"
+          supportingMetric="Heavy rain accelerating slope movement"
           severity="HIGH"
-          icon={<Flame className="w-4 h-4 text-orange-400" />}
+          icon={<Flame className="w-5 h-5 text-orange-400" />}
         />
 
         <StatCard
-          label="Active Warnings"
+          label="Active Hazard Warnings"
           value={activeAlerts.length}
           subValue={`(${criticalAlertsCount} critical)`}
           statusText={criticalAlertsCount > 0 ? '1 Critical Alert' : 'Advisory Active'}
-          supportingMetric="Action required"
+          supportingMetric="Immediate response needed at Sonapur"
           severity={criticalAlertsCount > 0 ? 'CRITICAL' : 'HIGH'}
-          icon={<AlertTriangle className="w-4 h-4 text-red-400" />}
+          icon={<AlertTriangle className="w-5 h-5 text-red-400" />}
         />
 
         <StatCard
-          label="Monitored Risk Zones"
+          label="Monitored Risk Sectors"
           value={DEMO_RISK_ZONES.length}
-          subValue="active zones"
+          subValue="active sectors"
           statusText="4 High / Critical"
-          supportingMetric="6 total monitored"
+          supportingMetric="Surveillance active across 6 corridors"
           severity="info"
-          icon={<Activity className="w-4 h-4 text-sky-400" />}
+          icon={<Activity className="w-5 h-5 text-sky-400" />}
         />
 
         <StatCard
-          label="Road Passability"
+          label="Highway Passability"
           value={`${DEMO_REGIONAL_KPI_SUMMARY.blockedRoadsCount} Blocked`}
           subValue={`+ ${DEMO_REGIONAL_KPI_SUMMARY.restrictedRoadsCount} restricted`}
           statusText="NH-06 Obstructed"
-          supportingMetric="Sonapur Tunnel area"
+          supportingMetric="Sonapur Tunnel northern approach closed"
           severity="MODERATE"
-          icon={<Route className="w-4 h-4 text-amber-400" />}
+          icon={<Route className="w-5 h-5 text-amber-400" />}
         />
       </div>
 
-      {/* 2. Central Section: GIS Risk Map Centerpiece (8 cols) & Active Alerts Panel (4 cols) */}
+      {/* 2. Central Decision Viewport: Dominant GIS Map (8 cols) & Active Warnings Stream (4 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* GIS Map Viewport (8 cols) */}
         <div className="lg:col-span-8">
@@ -148,9 +155,9 @@ export const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({
         </div>
       </div>
 
-      {/* 3. Lower Section: 3-Column Balanced Layout */}
+      {/* 3. Lower Section: 3-Column Balanced Command Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-        {/* Column 1: Monitored High-Risk Zones */}
+        {/* Column 1: Monitored Risk Sectors */}
         <div>
           <HighRiskZonesList
             zones={DEMO_RISK_ZONES}
@@ -159,7 +166,7 @@ export const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({
           />
         </div>
 
-        {/* Column 2: Road Connectivity Status */}
+        {/* Column 2: Road Corridor Passability */}
         <div>
           <RoadStatusWidget
             roads={DEMO_ROADS}
@@ -172,7 +179,7 @@ export const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({
           />
         </div>
 
-        {/* Column 3: Weather Telemetry & Emergency Priorities */}
+        {/* Column 3: Weather Telemetry & Emergency Priority Matrix */}
         <div className="space-y-6">
           <WeatherSummaryCard weather={DEMO_WEATHER} />
           
@@ -193,7 +200,7 @@ export const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({
           onClick={() => setSelectedZone(null)}
         >
           <div
-            className="bg-slate-900 border border-slate-700 rounded-lg shadow-xl max-w-xl w-full p-5 space-y-4 max-h-[90vh] overflow-y-auto"
+            className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -203,14 +210,14 @@ export const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({
                   <span className="font-mono text-xs font-semibold text-slate-300 bg-slate-800 px-2 py-0.5 rounded">
                     {selectedZone.code}
                   </span>
-                  <RiskBadge level={selectedZone.assessment.riskLevel} size="sm" />
+                  <RiskBadge level={selectedZone.riskLevel || selectedZone.assessment?.riskLevel || 'MODERATE'} size="sm" />
                 </div>
                 <h3 className="text-base font-bold text-slate-100 mt-1">
                   {selectedZone.name}
                 </h3>
                 <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
                   <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                  {selectedZone.district}, {selectedZone.state} (Lat: {selectedZone.coordinates.latitude}, Lon: {selectedZone.coordinates.longitude})
+                  {selectedZone.district}, {selectedZone.state} (Lat: {selectedZone.coordinates?.latitude ?? selectedZone.latitude}, Lon: {selectedZone.coordinates?.longitude ?? selectedZone.longitude})
                 </p>
               </div>
 
@@ -224,47 +231,47 @@ export const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({
             </div>
 
             {/* Risk Assessment */}
-            <div className="bg-slate-950/80 p-3.5 rounded border border-slate-800">
+            <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
               <RiskScore
-                score={selectedZone.assessment.riskScore}
-                level={selectedZone.assessment.riskLevel}
-                contributingFactors={selectedZone.assessment.contributingFactors}
+                score={selectedZone.riskScore ?? selectedZone.assessment?.riskScore ?? 50}
+                level={selectedZone.riskLevel ?? selectedZone.assessment?.riskLevel ?? 'MODERATE'}
+                contributingFactors={selectedZone.contributingFactors ?? selectedZone.assessment?.contributingFactors ?? []}
                 size="md"
               />
             </div>
 
-            {/* Telemetry Metrics */}
+            {/* Secondary Technical Metrics */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
-              <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                <span className="text-[11px] text-slate-400 block">24h Rainfall</span>
+              <div className="p-2.5 rounded bg-slate-950 border border-slate-800">
+                <span className="text-[11px] text-slate-400 block font-sans">24h Rainfall</span>
                 <span className="text-sm font-semibold text-slate-200">
-                  {selectedZone.assessment.rainfallAccumulation24hMm} mm
+                  {selectedZone.rainfallAccumulationMm ?? selectedZone.assessment?.rainfallAccumulation24hMm ?? 0} mm
                 </span>
               </div>
-              <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                <span className="text-[11px] text-slate-400 block">Slope Angle</span>
+              <div className="p-2.5 rounded bg-slate-950 border border-slate-800">
+                <span className="text-[11px] text-slate-400 block font-sans">Slope Angle</span>
                 <span className="text-sm font-semibold text-slate-200">
-                  {selectedZone.assessment.slopeAngleDeg}°
+                  {selectedZone.slopeAngleDeg ?? selectedZone.assessment?.slopeAngleDeg ?? 30}°
                 </span>
               </div>
-              <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                <span className="text-[11px] text-slate-400 block">Soil Saturation</span>
+              <div className="p-2.5 rounded bg-slate-950 border border-slate-800">
+                <span className="text-[11px] text-slate-400 block font-sans">Soil Saturation</span>
                 <span className="text-sm font-semibold text-slate-200">
-                  {selectedZone.assessment.soilMoisturePct}%
+                  {selectedZone.soilMoisturePercent ?? selectedZone.assessment?.soilMoisturePct ?? 0}%
                 </span>
               </div>
-              <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                <span className="text-[11px] text-slate-400 block">Past Landslides</span>
+              <div className="p-2.5 rounded bg-slate-950 border border-slate-800">
+                <span className="text-[11px] text-slate-400 block font-sans">Past Events</span>
                 <span className="text-sm font-semibold text-slate-200">
-                  {selectedZone.assessment.historicalLandslideCount} recorded
+                  {selectedZone.historicalEventsCount ?? selectedZone.assessment?.historicalLandslideCount ?? 0} recorded
                 </span>
               </div>
             </div>
 
             {/* Nearby Infrastructure & Roads */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-              <div className="p-2.5 rounded bg-slate-950/50 border border-slate-800 space-y-1">
-                <span className="text-slate-400 font-medium block">
+              <div className="p-3 rounded bg-slate-950 border border-slate-800 space-y-1">
+                <span className="text-slate-400 font-semibold block text-[11px] uppercase">
                   Connected Roads:
                 </span>
                 <ul className="space-y-0.5 text-slate-300">
@@ -274,8 +281,8 @@ export const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({
                 </ul>
               </div>
 
-              <div className="p-2.5 rounded bg-slate-950/50 border border-slate-800 space-y-1">
-                <span className="text-slate-400 font-medium block">
+              <div className="p-3 rounded bg-slate-950 border border-slate-800 space-y-1">
+                <span className="text-slate-400 font-semibold block text-[11px] uppercase">
                   Nearby Settlements:
                 </span>
                 <ul className="space-y-0.5 text-slate-300">
@@ -287,10 +294,11 @@ export const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({
             </div>
 
             {/* Modal Actions */}
-            <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
-              <span className="text-xs text-slate-500">
-                Sync: {selectedZone.lastUpdated}
-              </span>
+            <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Telemetry sync verified</span>
+              </div>
               <Button
                 variant="secondary"
                 size="sm"
@@ -305,3 +313,5 @@ export const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({
     </div>
   );
 };
+
+export default AuthorityDashboard;

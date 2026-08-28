@@ -1,9 +1,13 @@
 import { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { AuthorityDashboard } from './pages/AuthorityDashboard';
+import { FieldOfficerPortal } from './pages/FieldOfficerPortal';
+import { CitizenPortal } from './pages/CitizenPortal';
+import { RoleSelectionPage } from './pages/RoleSelectionPage';
 import { DEMO_ALERTS, DEMO_ROADS } from './data/mockData';
 
-export function App() {
+function AuthorityAppWrapper() {
   const [activeStateCode, setActiveStateCode] = useState<string>('NER');
   const [activeTab, setActiveTab] = useState<string>('overview');
 
@@ -47,6 +51,29 @@ export function App() {
         </div>
       )}
     </DashboardLayout>
+  );
+}
+
+export function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Unified Role Selection Landing Screen */}
+        <Route path="/" element={<RoleSelectionPage />} />
+
+        {/* District Administration Authority Dashboard */}
+        <Route path="/authority/*" element={<AuthorityAppWrapper />} />
+
+        {/* Field Officer Mobile Surveillance Portal */}
+        <Route path="/field/*" element={<FieldOfficerPortal />} />
+
+        {/* Public Citizen Safety & Reporting Portal */}
+        <Route path="/citizen/*" element={<CitizenPortal />} />
+
+        {/* Catch-all redirect to role selection */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

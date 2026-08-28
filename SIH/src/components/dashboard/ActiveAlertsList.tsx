@@ -16,7 +16,6 @@ export const ActiveAlertsList: React.FC<ActiveAlertsListProps> = ({
 }) => {
   const [selectedSeverity, setSelectedSeverity] = useState<RiskLevel | 'ALL'>('ALL');
 
-  // Severity rank comparator: CRITICAL (1), HIGH (2), MODERATE (3), LOW (4)
   const severityRank: Record<RiskLevel, number> = {
     CRITICAL: 1,
     HIGH: 2,
@@ -37,16 +36,16 @@ export const ActiveAlertsList: React.FC<ActiveAlertsListProps> = ({
   const highCount = alerts.filter((a) => a.severity === 'HIGH').length;
 
   return (
-    <div className="bg-slate-900 rounded-lg border border-slate-800 shadow-sm flex flex-col">
+    <div className="bg-slate-900 rounded-xl border border-slate-800 shadow-sm flex flex-col">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-900">
+      <div className="px-4 py-3.5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-900/90">
         <div className="flex items-center gap-2">
           <BellRing className="w-4 h-4 text-red-400" />
-          <h3 className="text-sm font-semibold text-slate-100">
-            Active Alerts
+          <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider">
+            Active Multi-Hazard Warnings
           </h3>
-          <span className="text-xs text-slate-400">
-            ({criticalCount} Critical, {highCount} High)
+          <span className="text-xs text-slate-400 font-mono">
+            ({criticalCount} Critical)
           </span>
         </div>
 
@@ -54,9 +53,9 @@ export const ActiveAlertsList: React.FC<ActiveAlertsListProps> = ({
         <div className="flex items-center gap-1">
           <button
             onClick={() => setSelectedSeverity('ALL')}
-            className={`px-2 py-0.5 rounded text-xs transition-colors ${
+            className={`px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
               selectedSeverity === 'ALL'
-                ? 'bg-slate-700 text-white font-medium'
+                ? 'bg-slate-800 text-white font-semibold'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -64,9 +63,9 @@ export const ActiveAlertsList: React.FC<ActiveAlertsListProps> = ({
           </button>
           <button
             onClick={() => setSelectedSeverity('CRITICAL')}
-            className={`px-2 py-0.5 rounded text-xs transition-colors ${
+            className={`px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
               selectedSeverity === 'CRITICAL'
-                ? 'bg-red-900/60 text-red-200 font-semibold border border-red-700'
+                ? 'bg-red-950 text-red-200 font-bold border border-red-700'
                 : 'text-slate-400 hover:text-red-300'
             }`}
           >
@@ -74,9 +73,9 @@ export const ActiveAlertsList: React.FC<ActiveAlertsListProps> = ({
           </button>
           <button
             onClick={() => setSelectedSeverity('HIGH')}
-            className={`px-2 py-0.5 rounded text-xs transition-colors ${
+            className={`px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
               selectedSeverity === 'HIGH'
-                ? 'bg-orange-900/60 text-orange-200 font-semibold border border-orange-700'
+                ? 'bg-orange-950 text-orange-200 font-bold border border-orange-700'
                 : 'text-slate-400 hover:text-orange-300'
             }`}
           >
@@ -86,9 +85,9 @@ export const ActiveAlertsList: React.FC<ActiveAlertsListProps> = ({
       </div>
 
       {/* Alert Cards Stream */}
-      <div className="p-3.5 space-y-3 max-h-[500px] overflow-y-auto">
+      <div className="p-4 space-y-3.5 max-h-[540px] overflow-y-auto">
         {filteredAlerts.length === 0 ? (
-          <div className="p-8 text-center bg-slate-950/40 rounded border border-dashed border-slate-800">
+          <div className="p-8 text-center bg-slate-950/40 rounded-lg border border-dashed border-slate-800">
             <CheckCircle2 className="w-6 h-6 text-emerald-400 mx-auto mb-1.5 opacity-80" />
             <p className="text-xs font-medium text-slate-300">
               No active alerts matching this filter
@@ -108,3 +107,5 @@ export const ActiveAlertsList: React.FC<ActiveAlertsListProps> = ({
     </div>
   );
 };
+
+export default ActiveAlertsList;

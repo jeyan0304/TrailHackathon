@@ -8,6 +8,7 @@ import {
   Info,
   MapPin,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { NER_STATES } from '../../data/mockData';
 import { ConnectionStatus } from '../../types';
 
@@ -152,6 +153,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
             )}
           </button>
+
+          {/* Switch Role Link */}
+          <Link
+            to="/"
+            className="text-xs px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium transition-colors hidden sm:inline-block"
+            title="Return to Role Selection"
+          >
+            Switch Role
+          </Link>
 
           {/* User Profile */}
           <div className="flex items-center gap-2.5 pl-2 sm:pl-3 border-l border-slate-800">
