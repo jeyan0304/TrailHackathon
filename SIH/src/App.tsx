@@ -5,6 +5,9 @@ import { AuthorityDashboard } from './pages/AuthorityDashboard';
 import { FieldOfficerPortal } from './pages/FieldOfficerPortal';
 import { CitizenPortal } from './pages/CitizenPortal';
 import { RoleSelectionPage } from './pages/RoleSelectionPage';
+import { LoginPage } from './pages/LoginPage';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { DEMO_ALERTS, DEMO_ROADS } from './data/mockData';
 
 function AuthorityAppWrapper() {
@@ -43,7 +46,7 @@ function AuthorityAppWrapper() {
             This section is scheduled for subsequent project phases. Return to the{' '}
             <button
               onClick={() => setActiveTab('overview')}
-              className="text-blue-400 underline font-medium hover:text-blue-300"
+              className="text-blue-400 underline font-medium hover:text-blue-300 cursor-pointer"
             >
               Overview Dashboard
             </button>.
@@ -56,24 +59,50 @@ function AuthorityAppWrapper() {
 
 export function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Unified Role Selection Landing Screen */}
-        <Route path="/" element={<RoleSelectionPage />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* 1. Unified Role Selection Landing Screen */}
+          <Route path="/" element={<RoleSelectionPage />} />
 
-        {/* District Administration Authority Dashboard */}
-        <Route path="/authority/*" element={<AuthorityAppWrapper />} />
+          {/* 2. Role-Specific Dynamic Login Gateway */}
+          <Route path="/login/:role" element={<LoginPage />} />
 
-        {/* Field Officer Mobile Surveillance Portal */}
-        <Route path="/field/*" element={<FieldOfficerPortal />} />
+          {/* 3. District Administration Authority Dashboard (Protected) */}
+          <Route
+            path="/authority/*"
+            element={
+              <ProtectedRoute allowedRole="Authority" roleKey="authority">
+                <AuthorityAppWrapper />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Public Citizen Safety & Reporting Portal */}
-        <Route path="/citizen/*" element={<CitizenPortal />} />
+          {/* 4. Field Officer Mobile Surveillance Portal (Protected) */}
+          <Route
+            path="/field/*"
+            element={
+              <ProtectedRoute allowedRole="FieldOfficer" roleKey="field">
+                <FieldOfficerPortal />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Catch-all redirect to role selection */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* 5. Public Citizen Safety & Reporting Portal (Protected) */}
+          <Route
+            path="/citizen/*"
+            element={
+              <ProtectedRoute allowedRole="Citizen" roleKey="citizen">
+                <CitizenPortal />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Catch-all redirect to role selection */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

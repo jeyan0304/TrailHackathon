@@ -8,6 +8,7 @@ import {
   MapPin,
   CheckCircle2,
   Activity,
+  Lock,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -55,7 +56,7 @@ export const RoleSelectionPage: React.FC = () => {
             Select Your Operational Role
           </h2>
           <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Choose a portal below to access customized surveillance tools, emergency prioritization matrices, and on-ground reporting capabilities.
+            Choose an operational gateway below to authenticate and access role-specific landslide surveillance tools, emergency prioritization matrices, and on-ground reporting capabilities.
           </p>
         </div>
 
@@ -63,14 +64,19 @@ export const RoleSelectionPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto w-full">
           {/* 1. District Administration */}
           <Link
-            to="/authority"
+            to="/login/authority"
             className="group rounded-2xl bg-slate-900 border border-slate-800 hover:border-blue-500/80 p-6 flex flex-col justify-between transition-all duration-200 hover:shadow-xl hover:shadow-blue-950/40 relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl group-hover:bg-blue-600/20 transition-colors pointer-events-none" />
 
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-950 border border-blue-800/80 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
-                <Building2 className="w-6 h-6" />
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-xl bg-blue-950 border border-blue-800/80 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
+                  <Building2 className="w-6 h-6" />
+                </div>
+                <span className="flex items-center gap-1 text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+                  <Lock className="w-3 h-3 text-blue-400" /> Auth Required
+                </span>
               </div>
 
               <div>
@@ -106,21 +112,26 @@ export const RoleSelectionPage: React.FC = () => {
             </div>
 
             <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-blue-400 group-hover:text-blue-300">
-              <span>Enter Authority Dashboard</span>
+              <span>Log In as Authority</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
 
           {/* 2. Field Officer Portal */}
           <Link
-            to="/field"
+            to="/login/field"
             className="group rounded-2xl bg-slate-900 border border-slate-800 hover:border-sky-500/80 p-6 flex flex-col justify-between transition-all duration-200 hover:shadow-xl hover:shadow-sky-950/40 relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-sky-600/10 rounded-full blur-2xl group-hover:bg-sky-600/20 transition-colors pointer-events-none" />
 
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-sky-950 border border-sky-800/80 flex items-center justify-center text-sky-400 group-hover:scale-105 transition-transform">
-                <Radio className="w-6 h-6" />
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-xl bg-sky-950 border border-sky-800/80 flex items-center justify-center text-sky-400 group-hover:scale-105 transition-transform">
+                  <Radio className="w-6 h-6" />
+                </div>
+                <span className="flex items-center gap-1 text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+                  <Lock className="w-3 h-3 text-sky-400" /> Auth Required
+                </span>
               </div>
 
               <div>
@@ -156,21 +167,26 @@ export const RoleSelectionPage: React.FC = () => {
             </div>
 
             <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-sky-400 group-hover:text-sky-300">
-              <span>Enter Field Officer Portal</span>
+              <span>Log In as Field Officer</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
 
           {/* 3. Public / Citizen Portal */}
           <Link
-            to="/citizen"
+            to="/login/citizen"
             className="group rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/80 p-6 flex flex-col justify-between transition-all duration-200 hover:shadow-xl hover:shadow-emerald-950/40 relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-600/10 rounded-full blur-2xl group-hover:bg-emerald-600/20 transition-colors pointer-events-none" />
 
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-950 border border-emerald-800/80 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
-                <Users className="w-6 h-6" />
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-xl bg-emerald-950 border border-emerald-800/80 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
+                  <Users className="w-6 h-6" />
+                </div>
+                <span className="flex items-center gap-1 text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+                  <Lock className="w-3 h-3 text-emerald-400" /> Auth Required
+                </span>
               </div>
 
               <div>
@@ -206,7 +222,7 @@ export const RoleSelectionPage: React.FC = () => {
             </div>
 
             <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-emerald-400 group-hover:text-emerald-300">
-              <span>Enter Citizen Portal</span>
+              <span>Log In as Citizen</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>

@@ -1,8 +1,9 @@
 import React from 'react';
-import { Shield, MapPin, Radio, Compass, PlusCircle, FileText, RefreshCcw, ArrowLeft } from 'lucide-react';
+import { Shield, MapPin, Radio, Compass, PlusCircle, FileText, RefreshCcw, ArrowLeft, LogOut } from 'lucide-react';
 import { ConnectionStatus, FieldOfficer, FieldActiveTab } from '../../types';
 import { ConnectionBadge } from '../common/ConnectionBadge';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export interface FieldHeaderProps {
   officer: FieldOfficer;
@@ -28,6 +29,14 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({
   activeTab = 'dashboard',
   onTabChange,
 }) => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   const navItems: Array<{ id: FieldActiveTab; label: string; icon: React.FC<{ className?: string }>; badge?: number }> = [
     { id: 'dashboard', label: 'Overview / Risk', icon: Compass },
     { id: 'report', label: 'Report Hazard', icon: PlusCircle },
@@ -77,7 +86,7 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({
                   key={item.id}
                   type="button"
                   onClick={() => onTabChange(item.id)}
-                  className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all duration-150 flex items-center gap-2 relative ${
+                  className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all duration-150 flex items-center gap-2 relative cursor-pointer ${
                     isActive
                       ? 'bg-blue-600 text-white shadow-sm font-bold'
                       : 'text-slate-300 hover:text-white hover:bg-slate-800'
@@ -96,8 +105,8 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({
           </nav>
         )}
 
-        {/* Right Info: Connection status badge */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Right Info: Connection status badge, Switch Role, Logout */}
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
           <div className="hidden md:flex flex-col text-right text-xs">
             <span className="font-semibold text-slate-200">{officer.assignedRegion}</span>
             <span className="text-[11px] text-slate-400 font-mono">{officer.currentSector}</span>
@@ -117,6 +126,15 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({
           >
             Switch Role
           </Link>
+
+          <button
+            onClick={handleLogout}
+            className="text-xs px-2.5 py-1.5 rounded bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-800 font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+            title="Log Out of Field Portal"
+          >
+            <LogOut className="w-3.5 h-3.5 text-red-400" />
+            <span className="hidden md:inline">Log Out</span>
+          </button>
         </div>
       </div>
 
@@ -161,3 +179,5 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({
     </header>
   );
 };
+
+export default FieldHeader;

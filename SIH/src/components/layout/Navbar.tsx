@@ -7,10 +7,12 @@ import {
   ChevronDown,
   Info,
   MapPin,
+  LogOut,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { NER_STATES } from '../../data/mockData';
 import { ConnectionStatus } from '../../types';
+import { useAuth } from '../../context/AuthContext';
 
 interface NavbarProps {
   activeStateCode?: string;
@@ -27,9 +29,16 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [connectionStatus] = useState<ConnectionStatus>('ONLINE');
   const [isStateDropdownOpen, setIsStateDropdownOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const selectedState =
     NER_STATES.find((s) => s.code === activeStateCode) || NER_STATES[0];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-sm">
@@ -77,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsStateDropdownOpen(!isStateDropdownOpen)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-800/90 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-800/90 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs transition-colors cursor-pointer"
             title="Switch Monitored NER Region / State"
           >
             <MapPin className="w-3.5 h-3.5 text-blue-400 shrink-0" />
@@ -125,7 +134,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
         </div>
 
-        {/* Right: Operational Status, Alerts, Profile */}
+        {/* Right: Operational Status, Alerts, Profile, Logout */}
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Simulated Clock */}
           <div className="hidden xl:flex items-center gap-1.5 text-xs text-slate-400 bg-slate-950 px-2.5 py-1.5 rounded border border-slate-800">
@@ -143,7 +152,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Alert Notification Bell */}
           <button
-            className="relative p-2 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-colors"
+            className="relative p-2 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-colors cursor-pointer"
             title={`${activeAlertsCount} Active Alerts (${criticalAlertsCount} Critical)`}
           >
             <Bell className="w-4 h-4" />
@@ -163,6 +172,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             Switch Role
           </Link>
 
+          {/* Log Out Button */}
+          <button
+            onClick={handleLogout}
+            className="text-xs px-2.5 py-1.5 rounded bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-800 font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+            title="Log Out of Authority Portal"
+          >
+            <LogOut className="w-3.5 h-3.5 text-red-400" />
+            <span className="hidden md:inline">Log Out</span>
+          </button>
+
           {/* User Profile */}
           <div className="flex items-center gap-2.5 pl-2 sm:pl-3 border-l border-slate-800">
             <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs">
@@ -170,10 +189,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <div className="hidden lg:block text-left">
               <div className="text-xs font-semibold text-slate-200">
-                District Administration
+                {user?.name || 'District Administration'}
               </div>
               <div className="text-[10px] text-slate-400">
-                Disaster Management Unit
+                {user?.district || 'Disaster Management Unit'}
               </div>
             </div>
           </div>
@@ -182,3 +201,5 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
+
+export default Navbar;

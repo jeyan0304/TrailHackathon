@@ -9,17 +9,26 @@ import {
   ArrowLeft,
   CheckCircle2,
   MapPin,
+  LogOut,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CitizenReport } from '../types';
 import { DEMO_LOCATION, MOCK_ALERTS, MOCK_REPORTS } from '../data/mockData';
 import { ReportIncidentPreview } from '../components/field/ReportIncidentPreview';
 import { ReportHistoryView } from '../components/field/ReportHistoryView';
 import { RiskBadge } from '../components/common/RiskBadge';
+import { useAuth } from '../context/AuthContext';
 
 export const CitizenPortal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'advisory' | 'report' | 'history'>('advisory');
   const [reports, setReports] = useState<CitizenReport[]>(MOCK_REPORTS);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const handleSubmitReport = (
     reportData: Omit<CitizenReport, 'id' | 'isMockData' | 'syncStatus' | 'reporterName' | 'reporterId' | 'timestamp'>
@@ -34,7 +43,7 @@ export const CitizenPortal: React.FC = () => {
         day: 'numeric',
         month: 'short',
       }),
-      reporterName: 'Local Citizen (Verified)',
+      reporterName: user?.name || 'Local Citizen (Verified)',
       reporterRole: 'Citizen',
       reporterType: 'Citizen',
       syncStatus: 'ONLINE',
@@ -71,18 +80,27 @@ export const CitizenPortal: React.FC = () => {
                 </span>
               </div>
               <p className="text-xs text-slate-400 truncate hidden sm:block">
-                Public Landslide Early Warning & Community Hazard Reporting
+                {user?.name ? `Logged in: ${user.name}` : 'Public Landslide Early Warning & Community Hazard Reporting'}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <Link
               to="/"
-              className="text-xs px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium transition-colors"
+              className="text-xs px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium transition-colors hidden sm:inline-block"
             >
               Switch Role
             </Link>
+
+            <button
+              onClick={handleLogout}
+              className="text-xs px-2.5 py-1.5 rounded bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-800 font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+              title="Log Out of Citizen Portal"
+            >
+              <LogOut className="w-3.5 h-3.5 text-red-400" />
+              <span className="hidden md:inline">Log Out</span>
+            </button>
           </div>
         </div>
 
@@ -91,7 +109,7 @@ export const CitizenPortal: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('advisory')}
-            className={`py-2.5 px-3 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            className={`py-2.5 px-3 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeTab === 'advisory'
                 ? 'border-blue-500 text-blue-400 font-bold'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -104,7 +122,7 @@ export const CitizenPortal: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('report')}
-            className={`py-2.5 px-3 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            className={`py-2.5 px-3 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeTab === 'report'
                 ? 'border-blue-500 text-blue-400 font-bold'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -117,7 +135,7 @@ export const CitizenPortal: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('history')}
-            className={`py-2.5 px-3 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            className={`py-2.5 px-3 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeTab === 'history'
                 ? 'border-blue-500 text-blue-400 font-bold'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
