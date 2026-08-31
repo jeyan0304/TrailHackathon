@@ -1,18 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole, Authority, FieldOfficer } from '../types';
+import { supabase } from '../lib/supabase';
 
 export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (roleKey: string, identifier: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AUTH_STORAGE_KEY = 'ner_safeslope_session_auth';
 
-// Pre-configured Demo Accounts for Hackathon demonstration
 export const DEMO_CREDENTIALS: Record<
   string,
   {
@@ -26,13 +26,13 @@ export const DEMO_CREDENTIALS: Record<
   authority: {
     role: 'Authority',
     roleName: 'District Administration',
-    sampleId: 'NER-ADMIN-01',
-    samplePass: 'admin123',
+    sampleId: '25104023@nec.edu.in',
+    samplePass: '',
     userProfile: {
-      id: 'auth-01',
-      name: 'Dr. P. Lyndem (ADC)',
+      id: '',
+      name: 'District Administration Officer',
       role: 'Authority',
-      email: 'admin.ekh@ner.gov.in',
+      email: '25104023@nec.edu.in',
       district: 'East Khasi Hills',
       department: 'District Disaster Management Authority (DDMA)',
       designation: 'Additional Deputy Commissioner / EOC Officer in Charge',
@@ -43,10 +43,10 @@ export const DEMO_CREDENTIALS: Record<
   field: {
     role: 'FieldOfficer',
     roleName: 'Field Officer',
-    sampleId: 'FO-204',
-    samplePass: 'officer123',
+    sampleId: '',
+    samplePass: '',
     userProfile: {
-      id: 'fo-204',
+      id: '',
       name: 'Insp. Thendup Sangma',
       role: 'FieldOfficer',
       officerId: 'FO-204',
@@ -62,18 +62,65 @@ export const DEMO_CREDENTIALS: Record<
   citizen: {
     role: 'Citizen',
     roleName: 'Public / Citizen',
-    sampleId: '9876543210',
-    samplePass: 'citizen123',
+    sampleId: '',
+    samplePass: '',
     userProfile: {
-      id: 'cit-104',
-      name: 'Wanda Lyngdoh',
+      id: '',
+      name: 'Community Citizen Sentinel',
       role: 'Citizen',
-      phone: '+91 98765 43210',
-      email: 'wanda.lyngdoh@community.ner',
       district: 'East Khasi Hills',
     },
   },
 };
+
+function buildUserProfile(
+  supabaseUser: { id: string; email?: string | null; user_metadata?: Record<string, unknown> },
+  role: UserRole
+): User | Authority | FieldOfficer {
+  const email = supabaseUser.email || '';
+  const meta = supabaseUser.user_metadata || {};
+  const name = (meta.name as string) || (meta.full_name as string) || email.split('@')[0].toUpperCase() || 'User';
+
+  if (role === 'Authority') {
+    return {
+      id: supabaseUser.id,
+      name: name || 'District Administration Officer',
+      role: 'Authority',
+      email: email,
+      district: (meta.district as string) || 'East Khasi Hills',
+      department: 'District Disaster Management Authority (DDMA)',
+      designation: (meta.designation as string) || 'Additional Deputy Commissioner / EOC Officer',
+      jurisdiction: 'Meghalaya Central Disaster Division',
+      emergencyContact: '0364-2224123',
+    } as Authority;
+  }
+
+  if (role === 'FieldOfficer') {
+    return {
+      id: supabaseUser.id,
+      name: name || 'Insp. Thendup Sangma',
+      role: 'FieldOfficer',
+      email: email,
+      officerId: (meta.officer_id as string) || 'FO-204',
+      badgeNumber: (meta.badge_number as string) || 'NER-ML-FO-204',
+      rank: (meta.rank as string) || 'Senior Field Inspector',
+      assignedRegion: 'Meghalaya Division (East Khasi Hills)',
+      currentSector: 'Sector 4 — Shillong Bypass / Sohra Route',
+      contactNumber: (meta.contact_number as string) || '+91 98620 44123',
+      status: 'PATROLLING',
+      batteryLevel: 88,
+      district: (meta.district as string) || 'East Khasi Hills',
+    } as FieldOfficer;
+  }
+
+  return {
+    id: supabaseUser.id,
+    name: name || 'Citizen Sentinel',
+    role: 'Citizen',
+    email: email,
+    district: (meta.district as string) || 'East Khasi Hills',
+  };
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
@@ -84,6 +131,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return null;
     }
   });
+
+  // Sync Supabase Auth session on mount and auth state change
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        let storedRole: UserRole = 'Authority';
+        try {
+          const stored = sessionStorage.getItem(AUTH_STORAGE_KEY);
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed?.role) storedRole = parsed.role;
+          }
+        } catch {
+          // ignore
+        }
+
+        const metaRole = session.user.user_metadata?.role as UserRole | undefined;
+        const finalRole: UserRole = metaRole || storedRole;
+        const profile = buildUserProfile(session.user, finalRole);
+        setUser(profile);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        let storedRole: UserRole = 'Authority';
+        try {
+          const stored = sessionStorage.getItem(AUTH_STORAGE_KEY);
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed?.role) storedRole = parsed.role;
+          }
+        } catch {
+          // ignore
+        }
+
+        const metaRole = session.user.user_metadata?.role as UserRole | undefined;
+        const finalRole: UserRole = metaRole || storedRole;
+        const profile = buildUserProfile(session.user, finalRole);
+        setUser(profile);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -102,53 +198,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     identifier: string,
     password: string
   ): Promise<{ success: boolean; error?: string }> => {
-    // Artificial 400ms delay to simulate secure authentication processing
-    await new Promise((resolve) => setTimeout(resolve, 400));
-
     const normalizedKey = roleKey.toLowerCase();
-    const roleConfig = DEMO_CREDENTIALS[normalizedKey];
-
-    if (!roleConfig) {
-      return { success: false, error: 'Invalid portal role requested.' };
-    }
 
     if (!identifier.trim()) {
-      return { success: false, error: 'Please enter your ID, email, or mobile number.' };
+      return { success: false, error: 'Please enter your account email address.' };
     }
 
     if (!password.trim()) {
       return { success: false, error: 'Please enter your account password.' };
     }
 
-    // Check against standard demo credentials (or accept any reasonable demo input with matching pass)
-    const isValidPass =
-      password === roleConfig.samplePass ||
-      password === 'admin123' ||
-      password === 'demo123' ||
-      password === 'password123';
-
-    if (!isValidPass) {
-      return {
-        success: false,
-        error: `Invalid credentials. For demo access, use ID: "${roleConfig.sampleId}" and Password: "${roleConfig.samplePass}".`,
-      };
+    let targetRole: UserRole = 'Authority';
+    if (normalizedKey === 'field' || normalizedKey === 'fieldofficer') {
+      targetRole = 'FieldOfficer';
+    } else if (normalizedKey === 'citizen') {
+      targetRole = 'Citizen';
     }
 
-    // Construct authenticated session profile
-    const authenticatedUser: User = {
-      ...roleConfig.userProfile,
-      name: identifier.includes('@')
-        ? identifier.split('@')[0].toUpperCase()
-        : identifier.startsWith('9') || identifier.startsWith('+')
-        ? `Citizen (${identifier})`
-        : roleConfig.userProfile.name,
-    };
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: identifier.trim(),
+        password: password,
+      });
 
-    setUser(authenticatedUser);
-    return { success: true };
+      if (error || !data.user) {
+        return {
+          success: false,
+          error: error?.message || 'Invalid email or password. Please verify your Supabase credentials.',
+        };
+      }
+
+      // Check if user metadata specifies role
+      const metaRole = data.user.user_metadata?.role as UserRole | undefined;
+      const finalRole: UserRole = metaRole || targetRole;
+
+      const profile = buildUserProfile(data.user, finalRole);
+      setUser(profile);
+      return { success: true };
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unable to connect to Supabase Auth service.';
+      return {
+        success: false,
+        error: errorMessage,
+      };
+    }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // Ignore network errors
+    }
     setUser(null);
     try {
       sessionStorage.removeItem(AUTH_STORAGE_KEY);

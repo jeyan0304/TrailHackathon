@@ -175,6 +175,10 @@ export interface Road {
   passabilityNotes?: string;
   linkedRiskZoneId?: string;
   riskZoneId?: string;
+  riskZoneName?: string;
+  importanceScore?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface Village {
@@ -185,6 +189,10 @@ export interface Village {
   householdCount?: number;
   nearestRiskZoneId?: string;
   riskZoneId?: string;
+  riskZoneName?: string;
+  populationExposure?: number;
+  latitude?: number;
+  longitude?: number;
   evacuationStatus?: 'SAFE' | 'ADVISORY_ISSUED' | 'EVACUATION_ORDERED' | 'NORMAL';
   isEvacuationReady?: boolean;
   emergencyShelter?: string;
@@ -194,11 +202,15 @@ export interface Infrastructure {
   id: string;
   name: string;
   type: string;
+  importanceScore?: number;
+  latitude?: number;
+  longitude?: number;
   location?: string;
   status?: string;
   vulnerabilityStatus?: 'SECURE' | 'AT_RISK' | 'CRITICAL_RISK';
   linkedRiskZoneId?: string;
   riskZoneId?: string;
+  riskZoneName?: string;
 }
 
 export interface Alert {
@@ -208,6 +220,8 @@ export interface Alert {
   title: string;
   location: string;
   zoneId?: string;
+  riskZoneId?: string;
+  riskZoneName?: string;
   timestamp: string;
   reason: string;
   contributingFactors?: string[];
@@ -215,7 +229,10 @@ export interface Alert {
   affectedVillages?: string[];
   affectedRoad?: string;
   affectedVillage?: string;
+  affectedRoadId?: string;
+  affectedVillageId?: string;
   recommendedAction: string;
+  recommendedResponse?: string;
   status: AlertStatus;
   isDemoData?: boolean;
   isDemoAlert?: boolean;
@@ -224,10 +241,14 @@ export interface Alert {
 export interface LandslideEvent {
   id: string;
   location: string;
+  riskZoneId?: string;
+  riskZoneName?: string;
   district?: string;
   date?: string;
   timestamp?: string;
-  severity: RiskLevel;
+  latitude?: number;
+  longitude?: number;
+  severity?: RiskLevel;
   casualties?: number;
   fatalities?: number;
   roadBlockedDays?: number;

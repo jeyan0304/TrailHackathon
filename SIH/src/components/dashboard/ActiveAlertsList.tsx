@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { Alert, RiskLevel } from '../../types';
 import { AlertCard } from './AlertCard';
-import { BellRing, CheckCircle2 } from 'lucide-react';
+import { BellRing, CheckCircle2, Database } from 'lucide-react';
 
 interface ActiveAlertsListProps {
   alerts: Alert[];
   onAcknowledgeAlert?: (alertId: string) => void;
   onSelectAlert?: (alert: Alert) => void;
+  isSupabaseLive?: boolean;
+  isLoading?: boolean;
 }
 
 export const ActiveAlertsList: React.FC<ActiveAlertsListProps> = ({
   alerts,
   onAcknowledgeAlert,
   onSelectAlert,
+  isSupabaseLive = false,
+  isLoading = false,
 }) => {
   const [selectedSeverity, setSelectedSeverity] = useState<RiskLevel | 'ALL'>('ALL');
 
@@ -47,6 +51,12 @@ export const ActiveAlertsList: React.FC<ActiveAlertsListProps> = ({
           <span className="text-xs text-slate-400 font-mono">
             ({criticalCount} Critical)
           </span>
+          {isSupabaseLive && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-mono text-blue-400 bg-blue-950/80 border border-blue-800 px-1.5 py-0.5 rounded">
+              <Database className="w-3 h-3 text-blue-400" />
+              LIVE
+            </span>
+          )}
         </div>
 
         {/* Filter Buttons */}
@@ -86,7 +96,12 @@ export const ActiveAlertsList: React.FC<ActiveAlertsListProps> = ({
 
       {/* Alert Cards Stream */}
       <div className="p-4 space-y-3.5 max-h-[540px] overflow-y-auto">
-        {filteredAlerts.length === 0 ? (
+        {isLoading ? (
+          <div className="p-8 text-center space-y-2 text-xs text-slate-400">
+            <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin mx-auto" />
+            <p>Fetching multi-hazard warnings...</p>
+          </div>
+        ) : filteredAlerts.length === 0 ? (
           <div className="p-8 text-center bg-slate-950/40 rounded-lg border border-dashed border-slate-800">
             <CheckCircle2 className="w-6 h-6 text-emerald-400 mx-auto mb-1.5 opacity-80" />
             <p className="text-xs font-medium text-slate-300">

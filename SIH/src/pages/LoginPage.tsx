@@ -6,6 +6,7 @@ import {
   Radio,
   Users,
   Lock,
+  Mail,
   User,
   Eye,
   EyeOff,
@@ -15,7 +16,7 @@ import {
   CheckCircle2,
   Info,
 } from 'lucide-react';
-import { useAuth, DEMO_CREDENTIALS } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/common/Button';
 
 interface RoleConfig {
@@ -27,10 +28,12 @@ interface RoleConfig {
   fieldLabel: string;
   fieldPlaceholder: string;
   fieldHelp: string;
+  isEmailType?: boolean;
   purposeText: string;
   targetRoute: string;
   demoId: string;
   demoPass: string;
+  isSupabaseAuth?: boolean;
 }
 
 export const LoginPage: React.FC = () => {
@@ -44,52 +47,58 @@ export const LoginPage: React.FC = () => {
   const roleConfigs: Record<string, RoleConfig> = {
     authority: {
       title: 'District Administration Login',
-      badge: 'OFFICIAL DDMA & EOC ACCESS',
+      badge: 'SUPABASE AUTHENTICATION',
       badgeClass: 'bg-blue-950 text-blue-300 border-blue-800',
       icon: <Building2 className="w-6 h-6 text-blue-400" />,
       iconBgClass: 'bg-blue-600/20 border-blue-500/40 text-blue-400',
-      fieldLabel: 'District / Admin ID',
-      fieldPlaceholder: 'e.g. NER-ADMIN-01 or admin.ekh@ner.gov.in',
-      fieldHelp: 'Enter your designated DDMA or Disaster Management Officer ID',
+      fieldLabel: 'Authority Email Address',
+      fieldPlaceholder: 'e.g. 25104023@nec.edu.in',
+      fieldHelp: 'Enter your registered official administration email address',
+      isEmailType: true,
       purposeText: 'Monitor regional landslide risk, alerts and emergency priorities.',
       targetRoute: '/authority',
-      demoId: DEMO_CREDENTIALS.authority.sampleId,
-      demoPass: DEMO_CREDENTIALS.authority.samplePass,
+      demoId: '25104023@nec.edu.in',
+      demoPass: '',
+      isSupabaseAuth: true,
     },
     field: {
       title: 'Field Officer Surveillance Login',
-      badge: 'TACTICAL ON-GROUND ACCESS',
+      badge: 'SUPABASE AUTHENTICATION',
       badgeClass: 'bg-sky-950 text-sky-300 border-sky-800',
       icon: <Radio className="w-6 h-6 text-sky-400" />,
       iconBgClass: 'bg-sky-600/20 border-sky-500/40 text-sky-400',
-      fieldLabel: 'Officer ID / Badge Number',
-      fieldPlaceholder: 'e.g. FO-204 or NER-ML-FO-204',
-      fieldHelp: 'Enter your SDRF/NDRF inspector badge or patrol officer code',
+      fieldLabel: 'Field Officer Email Address',
+      fieldPlaceholder: 'e.g. officer@ner-safeslope.org',
+      fieldHelp: 'Enter your registered field officer email address',
+      isEmailType: true,
       purposeText: 'Report hazards, verify incidents and monitor nearby risk zones.',
       targetRoute: '/field',
-      demoId: DEMO_CREDENTIALS.field.sampleId,
-      demoPass: DEMO_CREDENTIALS.field.samplePass,
+      demoId: '25104023@nec.edu.in',
+      demoPass: '',
+      isSupabaseAuth: true,
     },
     citizen: {
       title: 'Public / Citizen Portal Login',
-      badge: 'COMMUNITY SAFETY ACCESS',
+      badge: 'SUPABASE AUTHENTICATION',
       badgeClass: 'bg-emerald-950 text-emerald-300 border-emerald-800',
       icon: <Users className="w-6 h-6 text-emerald-400" />,
       iconBgClass: 'bg-emerald-600/20 border-emerald-500/40 text-emerald-400',
-      fieldLabel: 'Mobile Number or Email',
-      fieldPlaceholder: 'e.g. 9876543210 or resident@community.ner',
-      fieldHelp: 'Enter your 10-digit mobile number or registered email address',
+      fieldLabel: 'Citizen Email Address',
+      fieldPlaceholder: 'e.g. citizen@community.ner',
+      fieldHelp: 'Enter your registered citizen email address',
+      isEmailType: true,
       purposeText: 'Report hazards and receive safety warnings in your area.',
       targetRoute: '/citizen',
-      demoId: DEMO_CREDENTIALS.citizen.sampleId,
-      demoPass: DEMO_CREDENTIALS.citizen.samplePass,
+      demoId: '25104023@nec.edu.in',
+      demoPass: '',
+      isSupabaseAuth: true,
     },
   };
 
   const config = roleConfigs[roleKey] || roleConfigs.authority;
 
   // Form State
-  const [identifier, setIdentifier] = useState('');
+  const [identifier, setIdentifier] = useState(config.demoId || '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -106,7 +115,9 @@ export const LoginPage: React.FC = () => {
 
   const handleFillDemo = () => {
     setIdentifier(config.demoId);
-    setPassword(config.demoPass);
+    if (config.demoPass) {
+      setPassword(config.demoPass);
+    }
     setErrorMessage(null);
     setFieldErrors({});
   };
@@ -122,8 +133,6 @@ export const LoginPage: React.FC = () => {
     }
     if (!password.trim()) {
       errors.password = 'Password is required';
-    } else if (password.length < 4) {
-      errors.password = 'Password must be at least 4 characters';
     }
 
     if (Object.keys(errors).length > 0) {
@@ -139,10 +148,10 @@ export const LoginPage: React.FC = () => {
       if (result.success) {
         navigate(config.targetRoute, { replace: true });
       } else {
-        setErrorMessage(result.error || 'Authentication failed. Please verify credentials.');
+        setErrorMessage(result.error || 'Authentication failed. Please check credentials.');
       }
     } catch {
-      setErrorMessage('An unexpected authentication error occurred.');
+      setErrorMessage('An unexpected error occurred during login. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -174,7 +183,7 @@ export const LoginPage: React.FC = () => {
           </div>
 
           <span className="px-2.5 py-1 rounded text-[10px] font-mono uppercase tracking-wider font-bold bg-slate-900 text-slate-400 border border-slate-800">
-            SECURE ACCESS GATEWAY
+            {config.isSupabaseAuth ? 'SUPABASE AUTH GATEWAY' : 'SECURE ACCESS GATEWAY'}
           </span>
         </div>
       </header>
@@ -246,10 +255,10 @@ export const LoginPage: React.FC = () => {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                    <User className="w-4 h-4" />
+                    {config.isEmailType ? <Mail className="w-4 h-4" /> : <User className="w-4 h-4" />}
                   </div>
                   <input
-                    type="text"
+                    type={config.isEmailType ? 'email' : 'text'}
                     value={identifier}
                     onChange={(e) => {
                       setIdentifier(e.target.value);
@@ -259,6 +268,7 @@ export const LoginPage: React.FC = () => {
                     }}
                     placeholder={config.fieldPlaceholder}
                     disabled={isLoading}
+                    autoComplete="email"
                     className={`w-full bg-slate-950 border rounded-lg pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none transition-colors font-sans ${
                       fieldErrors.identifier
                         ? 'border-red-500 focus:border-red-500 ring-1 ring-red-500'
@@ -293,6 +303,7 @@ export const LoginPage: React.FC = () => {
                     }}
                     placeholder="Enter your security password..."
                     disabled={isLoading}
+                    autoComplete="current-password"
                     className={`w-full bg-slate-950 border rounded-lg pl-10 pr-10 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none transition-colors font-sans ${
                       fieldErrors.password
                         ? 'border-red-500 focus:border-red-500 ring-1 ring-red-500'
@@ -322,7 +333,7 @@ export const LoginPage: React.FC = () => {
                   loading={isLoading}
                   className="w-full justify-center py-2.5 text-sm font-bold shadow-md"
                 >
-                  {isLoading ? 'Verifying Credentials...' : `Log In to ${config.title.replace(' Login', '')}`}
+                  {isLoading ? 'Verifying with Supabase...' : `Log In to Authority Portal`}
                 </Button>
 
                 {/* Quick Auto-Fill Demo Credentials Helper */}
@@ -332,7 +343,7 @@ export const LoginPage: React.FC = () => {
                   className="w-full p-2.5 rounded-lg bg-slate-950 border border-dashed border-slate-700 hover:border-blue-500 text-xs text-slate-300 hover:text-blue-300 flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Auto-fill Demo Credentials (<strong>{config.demoId}</strong> / <strong>{config.demoPass}</strong>)</span>
+                  <span>Auto-fill Demo Account (<strong>{config.demoId}</strong>)</span>
                 </button>
               </div>
             </form>
@@ -341,7 +352,9 @@ export const LoginPage: React.FC = () => {
             <div className="pt-3 border-t border-slate-800/80 flex items-start gap-2 text-[11px] text-slate-400">
               <Info className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
               <span>
-                Simulated Hackathon Environment: All role-based sessions are managed locally via secure browser state.
+                {config.isSupabaseAuth
+                  ? 'Real Supabase Auth Active: Authenticating securely against the live project backend.'
+                  : 'Simulated Hackathon Environment: Role sessions managed via secure browser state.'}
               </span>
             </div>
           </div>

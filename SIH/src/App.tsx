@@ -2,6 +2,11 @@ import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { AuthorityDashboard } from './pages/AuthorityDashboard';
+import { RiskMapPage } from './pages/RiskMapPage';
+import { AlertsPage } from './pages/AlertsPage';
+import { RoadsPage } from './pages/RoadsPage';
+import { FieldReportsPage } from './pages/FieldReportsPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
 import { FieldOfficerPortal } from './pages/FieldOfficerPortal';
 import { CitizenPortal } from './pages/CitizenPortal';
 import { RoleSelectionPage } from './pages/RoleSelectionPage';
@@ -33,25 +38,20 @@ function AuthorityAppWrapper() {
       {activeTab === 'overview' && (
         <AuthorityDashboard activeStateCode={activeStateCode} />
       )}
-
-      {activeTab !== 'overview' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-12 text-center space-y-3">
-          <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center mx-auto text-slate-300 font-mono font-bold text-sm">
-            {activeTab.toUpperCase().slice(0, 3)}
-          </div>
-          <h3 className="text-base font-semibold text-slate-100 uppercase tracking-wide">
-            {activeTab.replace('-', ' ')} View
-          </h3>
-          <p className="text-xs text-slate-400 max-w-md mx-auto">
-            This section is scheduled for subsequent project phases. Return to the{' '}
-            <button
-              onClick={() => setActiveTab('overview')}
-              className="text-blue-400 underline font-medium hover:text-blue-300 cursor-pointer"
-            >
-              Overview Dashboard
-            </button>.
-          </p>
-        </div>
+      {activeTab === 'risk-map' && (
+        <RiskMapPage activeStateCode={activeStateCode} />
+      )}
+      {activeTab === 'alerts' && (
+        <AlertsPage />
+      )}
+      {activeTab === 'roads' && (
+        <RoadsPage />
+      )}
+      {activeTab === 'field-reports' && (
+        <FieldReportsPage />
+      )}
+      {activeTab === 'analytics' && (
+        <AnalyticsPage />
       )}
     </DashboardLayout>
   );
